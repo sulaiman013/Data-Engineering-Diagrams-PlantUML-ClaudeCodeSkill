@@ -1,0 +1,146 @@
+@startuml Apex Bank - Part 2: Transformation (v2)
+' ============================================
+' PART 2: CLEAN LANDSCAPE WITH ICONS
+' ============================================
+
+title **Apex National Bank** | Part 2: dbt Transformation & Star Schema
+
+' ============================================
+' ICONS
+' ============================================
+!include <tupadr3/devicons/database>
+!include <tupadr3/font-awesome/cogs>
+!include <tupadr3/font-awesome/check_circle>
+!include <tupadr3/font-awesome/cubes>
+!include <tupadr3/font-awesome/star>
+
+' ============================================
+' FORCE LANDSCAPE - CRITICAL
+' ============================================
+left to right direction
+
+' ============================================
+' HIGH CONTRAST STYLING
+' ============================================
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontColor #212121
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam roundcorner 10
+skinparam ArrowThickness 2
+skinparam ArrowColor #546E7A
+skinparam nodesep 50
+skinparam ranksep 80
+
+skinparam rectangle {
+    BackgroundColor #FFFFFF
+    BorderColor #90A4AE
+    FontColor #212121
+    BorderThickness 2
+}
+
+skinparam storage {
+    BackgroundColor #FFF3E0
+    BorderColor #FF9800
+    FontColor #E65100
+}
+
+skinparam database {
+    BackgroundColor #E8F5E9
+    BorderColor #4CAF50
+    FontColor #1B5E20
+}
+
+skinparam card {
+    BackgroundColor #FFF8E1
+    BorderColor #FFC107
+    FontColor #F57F17
+}
+
+skinparam component {
+    BackgroundColor #F3E5F5
+    BorderColor #9C27B0
+    FontColor #6A1B9A
+}
+
+skinparam legend {
+    BackgroundColor #FAFAFA
+    BorderColor #BDBDBD
+    FontColor #212121
+}
+
+skinparam note {
+    BackgroundColor #E3F2FD
+    BorderColor #2196F3
+    FontColor #0D47A1
+}
+
+' ============================================
+' BRONZE INPUT - Simplified
+' ============================================
+rectangle "Bronze\n(from Part 1)" as bronze {
+    storage "8 Raw\nTables" as b_all
+}
+
+' ============================================
+' DBT TRANSFORMATION
+' ============================================
+rectangle "dbt" as dbt_pkg {
+    component "<$cogs>\n**Staging**\nClean & Type" as stg
+    component "<$cubes>\n**Matching**\nUnify Customer" as match
+    component "<$check_circle>\n**Tests**\nQuality" as tests
+}
+
+' ============================================
+' SILVER - Star Schema
+' ============================================
+rectangle "Silver (Star Schema)" as silver {
+    database "<$star>\n**dim_customer**\n(UNIFIED)" as dim_cust
+    database "dim_branch\ndim_product\ndim_date" as dims
+    database "fct_transactions\nfct_complaints\nfct_sessions" as facts
+}
+
+' ============================================
+' GOLD
+' ============================================
+rectangle "Gold" as gold {
+    card "**customer_360**\nComplete View" as g360
+    card "**churn_features**\n9 ML Features" as gfeat
+}
+
+' ============================================
+' ENTITY RESOLUTION NOTE
+' ============================================
+note bottom of match
+    **Entity Resolution:**
+    4 IDs → 1 customer_key
+    via email matching
+end note
+
+' ============================================
+' SIMPLE LEFT-TO-RIGHT FLOW
+' ============================================
+b_all --> stg
+stg --> match
+match --> dim_cust
+tests -[dotted]-> silver
+
+dim_cust --> dims
+dim_cust --> facts
+
+dims --> g360
+facts --> g360
+facts --> gfeat
+
+' ============================================
+' LEGEND
+' ============================================
+legend bottom
+    | **Layer** | **Key Tables** | **Purpose** |
+    | Staging | stg_erp_*, stg_crm_* | Clean & standardize |
+    | Silver | dim_customer (unified), fct_transactions | Star schema |
+    | Gold | customer_360, churn_features | ML-ready aggregates |
+endlegend
+
+footer Part 2 of 3 | Bronze → dbt → Silver → Gold | Next: Part 3 (ML Pipeline)
+@enduml

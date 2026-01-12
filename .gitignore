@@ -1,0 +1,10 @@
+# Exclude cloned PlantUML source repository
+plantuml/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

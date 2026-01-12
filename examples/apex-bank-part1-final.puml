@@ -1,0 +1,118 @@
+@startuml Apex Bank - Part 1: Data Ingestion (Final)
+' ============================================
+' PART 1: MATCHING PART 2 V2 STYLE
+' ============================================
+
+title **Apex National Bank** | Part 1: Source Systems & Data Ingestion
+
+' ============================================
+' ICONS (same as part2-v2)
+' ============================================
+!include <tupadr3/devicons/database>
+!include <tupadr3/devicons/python>
+!include <tupadr3/font-awesome/cloud>
+!include <tupadr3/font-awesome/mobile>
+!include <tupadr3/font-awesome/table>
+
+' ============================================
+' FORCE LANDSCAPE
+' ============================================
+left to right direction
+
+' ============================================
+' HIGH CONTRAST STYLING (same as part2-v2)
+' ============================================
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontColor #212121
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam roundcorner 10
+skinparam ArrowThickness 2
+skinparam ArrowColor #546E7A
+skinparam nodesep 50
+skinparam ranksep 80
+
+skinparam rectangle {
+    BackgroundColor #FFFFFF
+    BorderColor #90A4AE
+    FontColor #212121
+    BorderThickness 2
+}
+
+skinparam card {
+    BackgroundColor #E3F2FD
+    BorderColor #1976D2
+    FontColor #0D47A1
+}
+
+skinparam component {
+    BackgroundColor #F3E5F5
+    BorderColor #9C27B0
+    FontColor #6A1B9A
+}
+
+skinparam storage {
+    BackgroundColor #FFF3E0
+    BorderColor #FF9800
+    FontColor #E65100
+}
+
+skinparam legend {
+    BackgroundColor #FAFAFA
+    BorderColor #BDBDBD
+    FontColor #212121
+}
+
+' ============================================
+' SOURCE SYSTEMS
+' ============================================
+rectangle "Source Systems" as sources {
+    card "<$database>\n**ERPNext**\n500 Customers\n8,569 Txns" as erp
+    card "<$cloud>\n**Salesforce**\n500 Contacts\n1,500 Cases" as sf
+    card "<$mobile>\n**Supabase**\n15K Sessions\n50K Events" as supa
+    card "<$table>\n**Sheets**\n10 Branches\n1K Notes" as sheets
+}
+
+' ============================================
+' INGESTION
+' ============================================
+rectangle "Ingestion" as ingest_pkg {
+    component "<$python>\n**Python**\nAPI Clients" as ingest
+}
+
+' ============================================
+' BRONZE
+' ============================================
+rectangle "Bronze (Databricks)" as bronze_pkg {
+    storage "**erp_***\ncustomers\ntransactions" as b_erp
+    storage "**crm_***\ncontacts\ncases" as b_crm
+    storage "**digital_***\nsessions\nevents" as b_dig
+    storage "**legacy_***\nbranches\nnotes" as b_leg
+}
+
+' ============================================
+' DATA FLOW
+' ============================================
+erp --> ingest
+sf --> ingest
+supa --> ingest
+sheets --> ingest
+
+ingest --> b_erp
+ingest --> b_crm
+ingest --> b_dig
+ingest --> b_leg
+
+' ============================================
+' LEGEND
+' ============================================
+legend bottom
+    | **Source** | **API** | **Bronze Tables** |
+    | ERPNext | REST API | erp_customers, erp_transactions |
+    | Salesforce | OAuth2 | crm_contacts, crm_cases |
+    | Supabase | SDK | digital_sessions, digital_events |
+    | Sheets | Google API | legacy_branches, legacy_notes |
+endlegend
+
+footer Part 1 of 3 | Sources → Ingestion → Bronze | Next: Part 2 (dbt Transformation)
+@enduml

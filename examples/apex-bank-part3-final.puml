@@ -1,0 +1,163 @@
+@startuml Apex Bank - Part 3: ML & Consumption (Final)
+' ============================================
+' PART 3: MATCHING PART 2 V2 STYLE
+' ============================================
+
+title **Apex National Bank** | Part 3: ML Churn Prediction & Business Value
+
+' ============================================
+' ICONS (using ones that work)
+' ============================================
+!include <tupadr3/font-awesome/cogs>
+!include <tupadr3/font-awesome/line_chart>
+!include <tupadr3/font-awesome/bell>
+!include <tupadr3/font-awesome/users>
+!include <tupadr3/font-awesome/check>
+!include <tupadr3/devicons/github_badge>
+
+' ============================================
+' FORCE LANDSCAPE
+' ============================================
+left to right direction
+
+' ============================================
+' HIGH CONTRAST STYLING (same as part2-v2)
+' ============================================
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontColor #212121
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 12
+skinparam roundcorner 10
+skinparam ArrowThickness 2
+skinparam ArrowColor #546E7A
+skinparam nodesep 50
+skinparam ranksep 80
+
+skinparam rectangle {
+    BackgroundColor #FFFFFF
+    BorderColor #90A4AE
+    FontColor #212121
+    BorderThickness 2
+}
+
+skinparam card {
+    BackgroundColor #FFF8E1
+    BorderColor #FFC107
+    FontColor #F57F17
+}
+
+skinparam component {
+    BackgroundColor #E3F2FD
+    BorderColor #1976D2
+    FontColor #0D47A1
+}
+
+skinparam database {
+    BackgroundColor #FFEBEE
+    BorderColor #EF5350
+    FontColor #C62828
+}
+
+skinparam artifact {
+    BackgroundColor #E0F7FA
+    BorderColor #00ACC1
+    FontColor #006064
+}
+
+skinparam legend {
+    BackgroundColor #FAFAFA
+    BorderColor #BDBDBD
+    FontColor #212121
+}
+
+skinparam note {
+    BackgroundColor #E8F5E9
+    BorderColor #4CAF50
+    FontColor #1B5E20
+}
+
+' ============================================
+' GOLD INPUT
+' ============================================
+rectangle "Gold\n(from Part 2)" as gold {
+    card "**customer_360**\nComplete View" as g360
+    card "**churn_features**\n9 Signals" as gfeat
+}
+
+' ============================================
+' ML TRAINING
+' ============================================
+rectangle "ML Training" as training {
+    component "<$cogs>\n**Gradient**\n**Boosting**" as model
+    component "<$line_chart>\n**MLflow**\nTracking" as mlflow
+}
+
+' ============================================
+' PREDICTIONS
+' ============================================
+rectangle "Predictions" as preds_pkg {
+    database "<$users>\n**churn_predictions**\nAUC: 0.82" as preds
+}
+
+' ============================================
+' OPERATIONS
+' ============================================
+rectangle "Operations" as ops {
+    component "<$cogs>\n**Airflow**\nDaily" as airflow
+    component "<$github_badge>\n**GitHub**\nCI/CD" as cicd
+}
+
+' ============================================
+' CONSUMPTION
+' ============================================
+rectangle "Business" as consume {
+    artifact "<$line_chart>\n**Power BI**\nDashboard" as pbi
+    artifact "<$bell>\n**Alerts**\nSlack" as alerts
+}
+
+' ============================================
+' OUTCOMES NOTE
+' ============================================
+note right of consume
+    <$check> **Outcomes:**
+    - 40 hrs/month saved
+    - Proactive retention
+    - $5-6M savings/year
+end note
+
+' ============================================
+' PREDICTIONS NOTE
+' ============================================
+note bottom of preds
+    **Risk Tiers:**
+    HIGH (>0.7): Call 48hr
+    MED (0.4-0.7): Email
+    LOW (<0.4): No action
+end note
+
+' ============================================
+' LEFT-TO-RIGHT FLOW
+' ============================================
+gfeat --> model
+model --> mlflow
+mlflow --> preds
+
+g360 --> pbi
+preds --> pbi
+preds --> alerts
+
+airflow -[dotted]-> training
+cicd -[dotted]-> airflow
+
+' ============================================
+' LEGEND
+' ============================================
+legend bottom
+    | **Stage** | **Technology** | **Schedule** | **Output** |
+    | Training | Scikit-learn, MLflow | Weekly | Model (AUC 0.82) |
+    | Inference | Databricks Jobs | Daily 6AM | 500 scored customers |
+    | Dashboard | Power BI | Hourly | Executive view + alerts |
+endlegend
+
+footer Part 3 of 3 | Gold → ML → Predictions → Business Value | Complete!
+@enduml
