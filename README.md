@@ -126,4 +126,4 @@ MIT License - Feel free to use and modify for your projects.
 
 ## Author
 
-Created with Claude Code - Anthropic's official CLI for Claude.
+Sulaiman Ahmed
